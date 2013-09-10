@@ -77,14 +77,14 @@ module ActiveModel
 
       # Define attributes to be used in the serialization.
       def attributes(*attrs)
-
+        options = attrs.extract_options!
         self._attributes = _attributes.dup
 
         attrs.each do |attr|
           if Hash === attr
             attr.each {|attr_real, key| attribute attr_real, :key => key }
           else
-            attribute attr
+            attribute attr, options
           end
         end
       end
@@ -100,7 +100,7 @@ module ActiveModel
           end
         end
 
-        define_include_method attr
+        define_include_method attr, options
 
         # protect inheritance chains and open classes
         # if a serializer inherits from another OR
@@ -123,20 +123,26 @@ module ActiveModel
             end
           end
 
-          define_include_method attr
+          define_include_method attr, options
 
           self._associations[attr] = klass.refine(attr, options)
         end
       end
 
-      def define_include_method(name)
+      def define_include_method(name, options = {})
         method = "include_#{name}?".to_sym
 
         INCLUDE_METHODS[name] = method
 
+        profiles = if options[:profile]
+          options[:profile].is_a?(Array) ? options[:profile] : [options[:profile]]
+        else
+          [:default]
+        end
+
         unless method_defined?(method)
           define_method method do
-            true
+            (profiles & [profile, :default]).any?
           end
         end
       end
@@ -486,6 +492,10 @@ module ActiveModel
 
     def expand_cache_key(*args)
       ActiveSupport::Cache.expand_cache_key(args)
+    end
+
+    def profile
+      @options[:profile] || :default
     end
 
     # Use ActiveSupport::Notifications to send events to external systems.
