@@ -16,6 +16,7 @@ module ActiveModel
         base._root = _root
         base._attributes = (_attributes || []).dup
         base._associations = (_associations || {}).dup
+        base._profiles = (_profiles || {}).deep_dup
       end
 
       def setup
@@ -67,7 +68,7 @@ end
         end
       end
 
-      attr_accessor :_root, :_attributes, :_associations
+      attr_accessor :_root, :_attributes, :_associations, :_profiles
       alias root  _root=
       alias root= _root=
 
@@ -79,6 +80,9 @@ end
       end
 
       def attributes(*attrs)
+        options = attrs.extract_options!
+        profiles = Array(options[:profile]) | [:default]
+
         attrs.each do |attr|
           striped_attr = strip_attribute attr
 
@@ -87,6 +91,10 @@ end
           define_method striped_attr do
             object.read_attribute_for_serialization attr
           end unless method_defined?(attr)
+
+          profiles.each do |profile|
+            @_profiles[profile] = (@_profiles[profile] || []) << striped_attr
+          end
         end
       end
 
@@ -142,8 +150,10 @@ end
       @key_format    = options[:key_format]
       @context       = options[:context]
       @namespace     = options[:namespace]
+      @profile       = options[:profile] || :default
+      @options       = options
     end
-    attr_accessor :object, :scope, :root, :meta_key, :meta, :key_format, :context, :polymorphic
+    attr_accessor :object, :scope, :root, :meta_key, :meta, :key_format, :context, :polymorphic, :profile, :options
 
     def json_key
       key = if root == true || root.nil?
@@ -185,6 +195,9 @@ end
     end
 
     def filter(keys)
+
+      keys = keys & Array(self.class._profiles[@profile])
+
       if @only
         keys & @only
       elsif @except

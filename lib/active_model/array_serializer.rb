@@ -24,6 +24,7 @@ module ActiveModel
       @except          = options[:except] ? Array(options[:except]) : nil
       @namespace       = options[:namespace]
       @key_format      = options[:key_format] || options[:each_serializer].try(:key_format)
+      @profile         = options[:profile] || :default
     end
     attr_accessor :object, :scope, :root, :meta_key, :meta, :key_format
 
@@ -35,7 +36,7 @@ module ActiveModel
 
     def serializer_for(item)
       serializer_class = @each_serializer || Serializer.serializer_for(item, namespace: @namespace) || DefaultSerializer
-      serializer_class.new(item, scope: scope, key_format: key_format, only: @only, except: @except, polymorphic: @polymorphic, namespace: @namespace)
+      serializer_class.new(item, scope: scope, key_format: key_format, only: @only, except: @except, polymorphic: @polymorphic, namespace: @namespace, profile: @profile)
     end
 
     def serializable_object(options={})
