@@ -81,7 +81,7 @@ end
 
       def attributes(*attrs)
         options = attrs.extract_options!
-        profiles = Array(options[:profile]) | [:default]
+        profiles = Array(options[:profile] || :default)
 
         attrs.each do |attr|
           striped_attr = strip_attribute attr
@@ -195,8 +195,8 @@ end
     end
 
     def filter(keys)
-
-      keys = keys & Array(self.class._profiles[@profile])
+      profile_keys = Array(self.class._profiles[@profile]) | Array(self.class._profiles[:default])
+      keys = keys & profile_keys
 
       if @only
         keys & @only
