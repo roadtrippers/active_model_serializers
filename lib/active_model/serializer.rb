@@ -273,7 +273,7 @@ module ActiveModel
 
         serializer = options.delete(:serializer) ||
           (resource.respond_to?(:active_model_serializer) &&
-           resource.active_model_serializer)
+           resource.active_model_serializer(options))
 
         return serializer unless serializer
 

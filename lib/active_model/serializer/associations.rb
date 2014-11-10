@@ -64,7 +64,7 @@ module ActiveModel
       def find_serializable(object)
         if serializer_class
           serializer_class.new(object, serializer_options)
-        elsif object.respond_to?(:active_model_serializer) && (ams = object.active_model_serializer)
+        elsif object.respond_to?(:active_model_serializer) && (ams = object.active_model_serializer(options))
           ams.new(object, serializer_options)
         else
           object

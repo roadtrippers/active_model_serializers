@@ -39,14 +39,23 @@ module ActiveModel::SerializerSupport
   extend ActiveSupport::Concern
 
   module ClassMethods #:nodoc:
+
+    def serializer_name(options)
+      namespace = options[:namespace]
+      model_name = "#{self.name}Serializer"
+      temp_name = [namespace, model_name].compact!.join('::')
+      puts "Looking for #{temp_name}"
+      temp_name
+    end
+
     if "".respond_to?(:safe_constantize)
-      def active_model_serializer
-        "#{self.name}Serializer".safe_constantize
+      def active_model_serializer(options={})
+        serializer_name(options).safe_constantize
       end
     else
-      def active_model_serializer
+      def active_model_serializer(options={})
         begin
-          "#{self.name}Serializer".constantize
+          serializer_name(options).constantize
         rescue NameError => e
           raise unless e.message =~ /uninitialized constant/
         end
@@ -55,8 +64,8 @@ module ActiveModel::SerializerSupport
   end
 
   # Returns a model serializer for this object considering its namespace.
-  def active_model_serializer
-    self.class.active_model_serializer
+  def active_model_serializer(options)
+    self.class.active_model_serializer(options) || self.class.active_model_serializer
   end
 
   alias :read_attribute_for_serialization :send
