@@ -126,6 +126,7 @@ end
 
       def associate(klass, *attrs)
         options = attrs.extract_options!
+        profiles = Array(options[:profile] || :default)
 
         attrs.each do |attr|
           define_method attr do
@@ -133,6 +134,10 @@ end
           end unless method_defined?(attr)
 
           @_associations[attr] = klass.new(attr, options)
+
+          profiles.each do |profile|
+            @_profiles[profile] = (@_profiles[profile] || []) << attr
+          end
         end
       end
     end
