@@ -1,4 +1,4 @@
-require 'active_support/core_ext/object/to_json'
+require 'active_support/core_ext/object/json'
 
 module ActiveModel
   # Enable classes to Classes including this module to serialize themselves by implementing a serialize method and an options method.
