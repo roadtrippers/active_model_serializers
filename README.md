@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/rails-api/active_model_serializers.png)](https://travis-ci.org/rails-api/active_model_serializers) [![Code Climate](https://codeclimate.com/github/rails-api/active_model_serializers.png)](https://codeclimate.com/github/rails-api/active_model_serializers) [![Coverage Status](https://coveralls.io/repos/rails-api/active_model_serializers/badge.png?branch=master)](https://coveralls.io/r/rails-api/active_model_serializers)
+[![Build Status](https://api.travis-ci.org/rails-api/active_model_serializers.png)](https://travis-ci.org/rails-api/active_model_serializers) [![Code Climate](https://codeclimate.com/github/rails-api/active_model_serializers.png)](https://codeclimate.com/github/rails-api/active_model_serializers)
 
 # Purpose
 
@@ -58,14 +58,31 @@ $ rails g serializer post
 ### Support for POROs and other ORMs.
 
 Currently `ActiveModel::Serializers` adds serialization support to all models
-that descend from `ActiveRecord` or include `Mongoid::Document`. If you are
-using another ORM, or if you are using objects that are `ActiveModel`
-compliant but do not descend from `ActiveRecord` or include
-`Mongoid::Document`, you must add an include statement for
-`ActiveModel::SerializerSupport` to make models serializable. If you
-also want to make collections serializable, you should include
+that descend from `ActiveRecord` or include `Mongoid::Document`. If you are:
+
+- using another ORM, or
+- using objects that are `ActiveModel` compliant but do not descend from
+`ActiveRecord` *or* include `Mongoid::Document`
+
+You must add an include statement for `ActiveModel::SerializerSupport` to
+make models serializable.
+
+If you also want to make collections serializable, you should include
 `ActiveModel::ArraySerializerSupport` into your ORM's
 relation/criteria class.
+
+Example model (`app/models/avatar.rb`):
+
+```ruby
+class Avatar
+  include ActiveModel::SerializerSupport
+  # etc, etc
+end
+```
+
+If your classes follow the naming conventions prescribed by `ActiveModel`,
+you don't need to do anything different in your controller to render the
+serialized json.
 
 # ActiveModel::Serializer
 

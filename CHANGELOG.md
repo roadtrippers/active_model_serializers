@@ -1,56 +1,34 @@
 # UNRELEASED
 
-* ActiveModel::Serializable was created it has the shared code between
-  AM::Serializer and AM::ArraySerializer. Basically enable objects to be
-  serializable by implementing an options method to handle the options
-  of the serialization and a serialize method that returns an object to
-  be converted to json by the module. This also removes duplicate code.
-  https://github.com/rails-api/active_model_serializers/commit/6c6bc8872d3b0f040a200854fa5530a775824dbf
+### v0.8.4 (2017-09-19)
 
-* ActiveModel::Serializer::Caching module was created it enables
-  Serializers to be able to cache to\_json and serialize calls. This
-  also helps removing duplicate code.
-  https://github.com/rails-api/active_model_serializers/commit/3e27110df78696ac48cafd1568f72216f348a188
+- [#1675](https://github.com/rails-api/active_model_serializers/pull/1675) Fix memory leak with :scope_name.
+  Supplying :scope_name causes `ActiveModel::Serializer#initialize` to
+  define a method on the class, which retains a reference to the
+  serializer instance. (@Botje)
+- [#1276](https://github.com/rails-api/active_model_serializers/pull/1276) Fix serializers were never including associations on cache hits (@kieran)
+- [#1503](https://github.com/rails-api/active_model_serializers/pull/1503) Add documentation with example to `README` for POROs and alternative ORMs (@feministy)
+- [#1376](https://github.com/rails-api/active_model_serializers/pull/1376) Test against Rails >= 4.0, Ruby >= 1.9.3 and remove Ruby 1.8 and 1.9.2 support (@bf4, @mhuggins)
 
-* We got rid of the Association.refine method which generated
-  subclasses.
-  https://github.com/rails-api/active_model_serializers/commit/24923722d4f215c7cfcdf553fd16582e28e3801b
+### v0.8.3 (2014-12-10)
+- [#753](https://github.com/rails-api/active_model_serializers/pull/753) Test against Ruby 2.2 on Travis CI (@tricknotes)
+- [#745](https://github.com/rails-api/active_model_serializers/pull/745) Missing a word (@jockee)
 
-* Associations doesn't know anymore about the source serializer.
-  That didn't make any sense.
-  https://github.com/rails-api/active_model_serializers/commit/2252e8fe6dbf45660c6a35f35e2423792f2c3abf
-  https://github.com/rails-api/active_model_serializers/commit/87eadd09b9a988bc1d9b30d9a501ef7e3fc6bb87
-  https://github.com/rails-api/active_model_serializers/commit/79a6e13e8f7fae2eb4f48e83a9633e74beb6739e
+### v0.8.2 (2014/09/01 21:00 +00:00)
+- [#612](https://github.com/rails-api/active_model_serializers/pull/612) Feature/adapter (@bolshakov)
+  * adds adapters pattern
+- [#615](https://github.com/rails-api/active_model_serializers/pull/615) Rails does not support const_defined? in development mode (@tpitale)
+- [#613](https://github.com/rails-api/active_model_serializers/pull/613) README: typo fix on attributes (@spk)
+- [#614](https://github.com/rails-api/active_model_serializers/pull/614) Fix rails 4.0.x build. (@arthurnn)
+- [#610](https://github.com/rails-api/active_model_serializers/pull/610) ArraySerializer (@bolshakov)
+- [#607](https://github.com/rails-api/active_model_serializers/pull/607) ruby syntax highlights (@zigomir)
+- [#602](https://github.com/rails-api/active_model_serializers/pull/602) Add DSL for associations (@JordanFaust)
 
-* Passing options[:hash] is not public API of include!. That was
-  removed.
-  https://github.com/rails-api/active_model_serializers/commit/5cbf9317051002a32c90c3f995b8b2f126f70d0c
-
-* ActiveModel::Serializer::Associations::Config is now
-  ActiveModel::Serializer::Association but it's an internal
-  thing so shouldn't bother.
-  ActiveModel::Serializer::Associations::Has\* are now
-  ActiveModel::Serializer::Association::Has\* and inherit from
-  ActiveModel::Serializer::Association
-  https://github.com/rails-api/active_model_serializers/commit/f5de334ddf1f3b9764d914a717311532021785d2
-  https://github.com/rails-api/active_model_serializers/commit/3dd422d99e8c57f113880da34f6abe583c4dadf9
-
-* serialize\_ids call methods on the corresponding serializer if they
-  are defined, instead of talking directly with the serialized object.
-  Serializers are decorators so we shouldn't talk directly with
-  serialized objects.
-
-* Array items are not wrapped anymore in root element.
-
-* Remove support for ruby 1.8 versions.
-
-* Require rails >= 3.2.
-
-# VERSION 0.8.1
+### 0.8.1 (May 6, 2013)
 
 * Fix bug whereby a serializer using 'options' would blow up.
 
-# VERSION 0.8.0
+### 0.8.0 (May 5, 2013)
 
 * Attributes can now have optional types.
 
@@ -86,7 +64,7 @@
 * Pass through serialization options (such as `:include`) when a model
   has no serializer defined.
 
-# VERSION 0.7.0
+## [0.7.0 (March 6, 2013)](https://github.com/rails-api/active_model_serializers/commit/fabdc621ff97fbeca317f6301973dd4564b9e695)
 
 * ```embed_key``` option to allow embedding by attributes other than IDs
 * Fix rendering nil with custom serializer
@@ -96,7 +74,7 @@
 * Serializer Reloading via ActiveSupport::DescendantsTracker
 * Reduce double map to once; Fixes datamapper eager loading.
 
-# VERSION 0.6.0
+## 0.6.0 (October 22, 2012)
 
 * Serialize sets properly
 * Add root option to ArraySerializer
@@ -107,7 +85,18 @@
 * Allow serialization_scope to be disabled with serialization_scope nil
 * Array serializer should support pure ruby objects besides serializers
 
-# VERSION 0.5.0 (May 16, 2012)
+## 0.05.x
+
+### [0.5.2 (June 5, 2012)](https://github.com/rails-api/active_model_serializers/commit/615afd125c260432d456dc8be845867cf87ea118#diff-0c5c12f311d3b54734fff06069efd2ac)
+
+### [0.5.1 (May 23, 2012)](https://github.com/rails-api/active_model_serializers/commit/00194ec0e41831802fcbf893a34c0bb0853ebe14#diff-0c5c12f311d3b54734fff06069efd2ac)
+
+### [0.5.0 (May 16, 2012)](https://github.com/rails-api/active_model_serializers/commit/33d4842dcd35c7167b0b33fc0abcf00fb2c92286)
 
 * First tagged version
 * Changes generators to always generate an ApplicationSerializer
+
+## [0.1.0 (December 21, 2011)](https://github.com/rails-api/active_model_serializers/commit/1e0c9ef93b96c640381575dcd30be07ac946818b)
+
+## First Commit as [Rails Serializers 0.0.1](https://github.com/rails-api/active_model_serializers/commit/d72b66d4c5355b0ff0a75a04895fcc4ea5b0c65e)
+  (December 1, 2011).

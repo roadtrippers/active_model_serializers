@@ -52,7 +52,7 @@ module ActiveModel
         end
         serializer ||= DefaultSerializer
 
-        serializable = serializer.new(item, options.merge(root: nil))
+        serializable = serializer ? serializer.new(item, @options) : DefaultSerializer.new(item, @options.merge(:root => false))
 
         if serializable.respond_to?(:serializable_hash)
           serializable.serializable_hash

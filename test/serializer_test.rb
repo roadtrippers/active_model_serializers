@@ -1439,6 +1439,7 @@ class SerializerTest < ActiveModel::TestCase
     end
 
     data_class = Class.new do
+      include ActiveModel::Serializers::JSON
       attr_accessor :title, :body
     end
 
@@ -1517,5 +1518,18 @@ class SerializerTest < ActiveModel::TestCase
         title: "New Post"
       }
     }, post_serializer.as_json)
+  end
+
+  def test_as_json_with_nil_options
+    user = User.new
+    user_serializer = DefaultUserSerializer.new(user, {})
+
+    # ActiveSupport 3.1 Object#to_json generates this downstream call
+    assert_equal({
+      :default_user => {
+        :first_name => "Jose",
+        :last_name => "Valim"
+      }
+    }, user_serializer.as_json(nil))
   end
 end

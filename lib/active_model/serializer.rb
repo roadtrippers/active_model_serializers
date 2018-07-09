@@ -304,9 +304,7 @@ module ActiveModel
 
       scope_name = @options[:scope_name]
       if scope_name && !respond_to?(scope_name)
-        self.class.class_eval do
-          define_method scope_name, lambda { scope }
-        end
+        self.singleton_class.send :alias_method, scope_name, :scope
       end
     end
 
@@ -328,20 +326,32 @@ module ActiveModel
 
     # Returns a json representation of the serializable
     # object including the root.
-    def as_json(args={})
-      super(root: args.fetch(:root, options.fetch(:root, root_name)))
-    end
+    def as_json(options={})
+      options ||= {}
+      if root = options.fetch(:root, @options.fetch(:root, root_name))
+        @options[:hash] = hash = {}
+        @options[:unique_values] = {}
 
-    def serialize_object
-      serializable_hash
+        hash.merge!(root => serializable_hash)
+        include_meta hash
+        hash
+      else
+        serializable_hash
+      end
     end
 
     # Returns a hash representation of the serializable
     # object without the root.
     def serializable_hash
-      return nil if @object.nil?
-      @node = attributes
-      include_associations! if _embed
+      @node = if perform_caching?
+        cache.fetch expand_cache_key([self.class.to_s.underscore, cache_key, 'serializable-hash']) do
+          _serializable_hash
+        end
+      else
+        _serializable_hash
+      end
+
+      include_associations! if @object.present? && _embed
       @node
     end
 
@@ -448,6 +458,19 @@ module ActiveModel
 
     def profile
       @options[:profile] || :default
+    end
+
+    def _serializable_hash
+      return nil if @object.nil?
+      attributes
+    end
+
+    def perform_caching?
+      perform_caching && cache && respond_to?(:cache_key)
+    end
+
+    def expand_cache_key(*args)
+      ActiveSupport::Cache.expand_cache_key(args)
     end
 
     # Use ActiveSupport::Notifications to send events to external systems.
